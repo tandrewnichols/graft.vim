@@ -1,7 +1,6 @@
 if exists('g:loaded_graft') || &cp | finish | endif
 let g:loaded_graft = 1
 let g:graft_plugins = {}
-
 let g:graft_open_command = get(g:, "graft_open_command", "edit")
 let g:graft_call_through = get(g:, "graft_call_through", 1)
 let g:graft_create_missing_dirs = get(g:, "graft_create_missing_dirs", 1)
@@ -28,8 +27,6 @@ function! g:RunGraft(...)
           silent execute view file[0]
           if !empty(file[1])
             call file[1]()
-            "call search("\\(exports\\.\\|export.*\\)\\zs" . file[1] . "\\ze = ")
-            "call matchadd("Search", file[1])
           endif
           break
         endif
@@ -43,7 +40,7 @@ function! g:RunGraft(...)
 endfunction
 
 function! g:RegisterGraftLoader(name, filetype)
-  if !exists("g:graft_plugins." . a:filetype)
+  if !has_key(g:graft_plugins, a:filetype)
     let g:graft_plugins[ a:filetype ] = []
   endif
   call add(g:graft_plugins[ a:filetype ], a:name)
