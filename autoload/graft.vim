@@ -44,3 +44,22 @@ endfunction
 function graft#createCallback(func, args)
   return function(a:func, a:args)
 endfunction
+
+" Find a file up the directory hierarchy from the cwd
+function graft#findup(file)
+  return graft#findupFrom(getcwd(), a:file)
+endfunction
+
+"" Find a file up the directory hierarchy from a given directory
+function graft#findupFrom(dir, file)
+  let dir = fnamemodify(a:dir, ":p")
+  let trypath = dir . a:file
+  if dir == "/"
+    return ""
+  endif
+  return graft#pathExists(trypath) ? trypath : graft#findupFrom(fnamemodify(dir, ":p:h:h"), a:file)
+endfunction
+
+function graft#pathExists(path)
+  return !empty(glob(a:path))
+endfunction
