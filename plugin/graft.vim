@@ -1,6 +1,13 @@
 if exists('g:loaded_graft') || &cp | finish | endif
+
 let g:loaded_graft = 1
 let g:graft_plugins = {}
+
+let g:graft_edit_mapping = get(g:, "graft_edit_mapping", "gfe")
+let g:graft_vsplit_mapping = get(g:, "graft_vsplit_mapping", "gfv")
+let g:graft_split_mapping = get(g:, "graft_split_mapping", "gfs")
+let g:graft_tabe_mapping = get(g:, "graft_tabe_mapping", "gft")
+
 let g:graft_open_command = get(g:, "graft_open_command", "edit")
 let g:graft_call_through = get(g:, "graft_call_through", 1)
 let g:graft_create_missing_dirs = get(g:, "graft_create_missing_dirs", 1)
@@ -30,11 +37,11 @@ function! g:RunGraft(...)
           endif
           break
         endif
-      elseif plugin == plugins[-1] && g:graft_call_through
+      elseif plugin == plugins[-1]
         call s:CallThrough()
       endif
     endfor
-  elseif g:graft_call_through
+  else
     call s:CallThrough()
   endif
 endfunction
@@ -42,31 +49,25 @@ endfunction
 function! g:RegisterGraftLoader(name, filetype)
   if !has_key(g:graft_plugins, a:filetype)
     let g:graft_plugins[ a:filetype ] = []
+
+    " Setup a filetype autocommand for this filetype to add
+    " buffer specific key mappings
+    execute "augroup GraftMappings_" a:filetype
+      au!
+      execute "au FileType " a:filetype " call graft#defineMappings()"
+    augroup END
   endif
+
   call add(g:graft_plugins[ a:filetype ], a:name)
 endfunction
 
 function! s:CallThrough()
-  normal! gf
+  if g:graft_call_through
+    normal! gf
+  endif
 endfunction
 
 nnoremap <silent> <Plug>GraftEdit :call g:RunGraft()<CR>
 nnoremap <silent> <Plug>GraftVsplit :call g:RunGraft("vsplit")<CR>
 nnoremap <silent> <Plug>GraftSplit :call g:RunGraft("split")<CR>
 nnoremap <silent> <Plug>GraftTabe :call g:RunGraft("tabedit")<CR>
-
-if !hasmapto("<Plug>GraftEdit")
-  nmap gf <Plug>GraftEdit
-endif
-
-if !hasmapto("<Plug>GraftVsplit")
-  nmap K <Plug>GraftVsplit
-endif
-
-if !hasmapto("<Plug>GraftSplit")
-  nmap <leader>gf <Plug>GraftSplit
-endif
-
-if !hasmapto("<Plug>GraftTabe")
-  nmap <leader>K <Plug>GraftTabe
-endif
