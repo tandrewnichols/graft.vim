@@ -7,13 +7,20 @@ let g:graft_edit_mapping = get(g:, "graft_edit_mapping", "gfe")
 let g:graft_vsplit_mapping = get(g:, "graft_vsplit_mapping", "gfv")
 let g:graft_split_mapping = get(g:, "graft_split_mapping", "gfs")
 let g:graft_tabe_mapping = get(g:, "graft_tabe_mapping", "gft")
+let g:graft_default_action = get(g:, "graft_default_action", "edit")
 
-let g:graft_open_command = get(g:, "graft_open_command", "edit")
 let g:graft_call_through = get(g:, "graft_call_through", 1)
 let g:graft_create_missing_dirs = get(g:, "graft_create_missing_dirs", 1)
+let g:graft_no_default_gf = get(g:, "graft_no_default_gt", 0)
 
 function! g:RunGraft(...)
-  let view = a:0 > 0 ? a:1 : g:graft_open_command
+  let view = a:0 > 0 ? a:1 : 0
+  if !view && g:graft_no_default_gf
+    call s:CallThrough()
+  else
+    let view = g:graft_default_action
+  endif
+
   let filetypes = split(&filetype, '\.')
   let plugins = []
   for ft in filetypes
@@ -67,7 +74,8 @@ function! s:CallThrough()
   endif
 endfunction
 
-nnoremap <silent> <Plug>GraftEdit :call g:RunGraft()<CR>
+nnoremap <silent> <Plug>GraftDefault :call g:RunGraft()<CR>
+nnoremap <silent> <Plug>GraftEdit :call g:RunGraft("edit")<CR>
 nnoremap <silent> <Plug>GraftVsplit :call g:RunGraft("vsplit")<CR>
 nnoremap <silent> <Plug>GraftSplit :call g:RunGraft("split")<CR>
 nnoremap <silent> <Plug>GraftTabe :call g:RunGraft("tabedit")<CR>

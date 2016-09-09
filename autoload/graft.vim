@@ -3,6 +3,7 @@ function graft#defineMappings()
   execute "nmap \<buffer> " . g:graft_vsplit_mapping . " <Plug>GraftVsplit"
   execute "nmap \<buffer> " . g:graft_split_mapping . " <Plug>GraftSplit"
   execute "nmap \<buffer> " . g:graft_tabe_mapping . " <Plug>GraftTabe"
+  nmap <buffer> gf <Plug>GraftDefault
 endfunction
 
 function graft#lineMatches(test)
