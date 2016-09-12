@@ -11,14 +11,16 @@ let g:graft_default_action = get(g:, "graft_default_action", "edit")
 
 let g:graft_call_through = get(g:, "graft_call_through", 1)
 let g:graft_create_missing_dirs = get(g:, "graft_create_missing_dirs", 1)
-let g:graft_no_default_gf = get(g:, "graft_no_default_gt", 0)
+let g:graft_no_default_gf = get(g:, "graft_no_default_gf", 0)
 
 function! g:RunGraft(...)
-  let view = a:0 > 0 ? a:1 : 0
-  if !view && g:graft_no_default_gf
-    call s:CallThrough()
-  else
-    let view = g:graft_default_action
+  let view = a:0 > 0 ? a:1 : ""
+  if empty(view)
+    if g:graft_no_default_gf
+      call s:CallThrough()
+    else
+      let view = g:graft_default_action
+    endif
   endif
 
   let filetypes = split(&filetype, '\.')
