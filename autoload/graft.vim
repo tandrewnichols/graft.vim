@@ -71,3 +71,24 @@ endfunction
 function graft#pathExists(path)
   return !empty(glob(a:path))
 endfunction
+
+function graft#getBufferText()
+  return join(getline(1,'$'), "\n")
+endfunction
+
+function graft#trimLeft(str)
+  return substitute(a:str, '\v^\s+', "", "")
+endfunction
+
+function graft#inDirectory(dir)
+  return expand("%:h") =~ a:dir
+endfunction
+
+function graft#getRoot()
+  let root = graft#findup(".git")
+  if !empty(root)
+    return substitute(root, "/.git", "", "")
+  else
+    return root
+  endif
+endfunction
