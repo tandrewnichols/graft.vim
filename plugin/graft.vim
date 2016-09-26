@@ -27,7 +27,8 @@ function! g:RunGraft(...)
   let plugins = []
   for ft in filetypes
     if has_key(g:graft_plugins, ft)
-      let plugins += g:graft_plugins[ ft ]
+      let clone = deepcopy(g:graft_plugins[ft])
+      let plugins += map(filter(clone, 'v:val.When() == 1'), 'v:val.name')
     endif
   endfor
 
@@ -55,7 +56,7 @@ function! g:RunGraft(...)
   endif
 endfunction
 
-function! g:RegisterGraftLoader(name, filetype)
+function! g:RegisterGraftLoader(name, filetype, ...)
   if !has_key(g:graft_plugins, a:filetype)
     let g:graft_plugins[ a:filetype ] = []
 
@@ -67,7 +68,16 @@ function! g:RegisterGraftLoader(name, filetype)
     augroup END
   endif
 
-  call add(g:graft_plugins[ a:filetype ], a:name)
+  function! RetTrue()
+    return 1
+  endfunction
+
+  let pluginObj = { 'name': a:name, 'When': function('RetTrue') }
+  if a:0 > 0
+    let pluginObj.When = a:1
+  endif
+
+  call add(g:graft_plugins[ a:filetype ], pluginObj)
 endfunction
 
 function! s:CallThrough()
