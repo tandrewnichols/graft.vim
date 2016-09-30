@@ -33,20 +33,15 @@ function! g:RunGraft(...)
   endfor
 
   if len(plugins) > 0
-    let file = ""
+    let matched = {}
     for plugin in plugins
-      execute "let file = graft#" . plugin . "#load()"
-      if type(file) != 0 && !empty(file)
-        if type(file) == 1
-          silent execute view file
-          break
-        elseif type(file) == 3
-          silent execute view file[0]
-          if !empty(file[1])
-            call file[1]()
-          endif
-          break
+      execute "let matched = graft#" . plugin . "#load()"
+      if has_key(matched, 'file')
+        silent execute view matched.file
+        if has_key(matched, 'Action')
+          call matched.Action()
         endif
+        break
       elseif plugin == plugins[-1]
         call s:CallThrough()
       endif
